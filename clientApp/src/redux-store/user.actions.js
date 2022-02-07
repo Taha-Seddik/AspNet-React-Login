@@ -1,11 +1,13 @@
 import { userService } from "../api/account.service";
+import { storeUser } from "../api/userService";
 
 const login = (loginPayload, callback) => {
   return (dispatch, getState) => {
     userService
       .login(loginPayload)
-      .then((res) => {
+      .then(async (res) => {
         const data = res.data;
+        await storeUser();
         callback();
       })
       .catch((error) => {

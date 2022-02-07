@@ -34,13 +34,10 @@ namespace NiceServer
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "Nice_Api",
-                        "offline_access"
+                        "Nice_Api"
                     },
                     RequireClientSecret = false,
                     RequirePkce = false,
-                    AllowOfflineAccess = true,
-                    AllowAccessTokensViaBrowser = true,
                     RefreshTokenUsage = TokenUsage.OneTimeOnly,
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     AccessTokenLifetime = 7200, //2 hours

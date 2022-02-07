@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -7,7 +8,7 @@ const getCurrentUser = () => {
 };
 
 const login = (userLoginData) => {
-  return axios.post("/account/login", userLoginData);
+  return axiosInstance.post("/account/login", userLoginData);
 };
 
 const register = (userRegisterData) => {
