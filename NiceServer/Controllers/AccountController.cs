@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NiceServer.Models;
-using NiceServer.Services;
-using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -18,35 +18,36 @@ namespace NiceServer.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly TokenService _tokenService;
 
         public AccountController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, TokenService tokenService)
+            SignInManager<AppUser> signInManager)
         {
-            _tokenService = tokenService;
             _signInManager = signInManager;
             _userManager = userManager;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginDto loginDto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
-
             if (user == null) return Unauthorized("Invalid email");
-
-            if (user.UserName == "bob") user.EmailConfirmed = true;
-
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
             if (result.Succeeded)
             {
-                await SetRefreshToken(user);
-                return CreateUserObject(user);
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, loginDto.Email),
+                    new Claim(ClaimTypes.Role, "Administrator"),
+                };
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity)
+                );
+                return Ok();
             }
-
-            return Unauthorized("Invalid password");
+            return Unauthorized("Invalid Pwd");
         }
 
         [AllowAnonymous]
@@ -78,58 +79,6 @@ namespace NiceServer.Controllers
             return Ok("Registration success - please verify email");
         }
 
-        [Authorize]
-        [HttpGet]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
-            await SetRefreshToken(user);
-            return CreateUserObject(user);
-        }
-
-        [Authorize]
-        [HttpPost("refreshToken")]
-        public async Task<ActionResult<UserDto>> RefreshToken()
-        {
-            var refreshToken = Request.Cookies["refreshToken"];
-            var user = await _userManager.Users
-                .Include(r => r.RefreshTokens)
-                .FirstOrDefaultAsync(x => x.UserName == User.FindFirstValue(ClaimTypes.Name));
-
-            if (user == null) return Unauthorized();
-
-            var oldToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken);
-
-            if (oldToken != null && !oldToken.IsActive) return Unauthorized();
-
-            return CreateUserObject(user);
-        }
-
-        private async Task SetRefreshToken(AppUser user)
-        {
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
-            user.RefreshTokens.Add(refreshToken);
-            await _userManager.UpdateAsync(user);
-
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(7)
-            };
-
-            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
-        }
-
-        private UserDto CreateUserObject(AppUser user)
-        {
-            return new UserDto
-            {
-                DisplayName = user.DisplayName,
-                Token = _tokenService.CreateToken(user),
-                Username = user.UserName
-            };
-        }
     }
 }
 
