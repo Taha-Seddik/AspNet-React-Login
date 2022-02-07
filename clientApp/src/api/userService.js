@@ -1,5 +1,6 @@
 import { UserManager } from "oidc-client";
-import { storeUserError, storeUser } from "../redux-store/user.actions";
+import { userActions } from "../redux-store/user.slice";
+import store from "../redux-store/store";
 
 const config = {
   authority: "https://localhost:5001",
@@ -10,20 +11,20 @@ const config = {
   post_logout_redirect_uri: "http://localhost:3000/signout-oidc",
 };
 
-const userManager = new UserManager(config);
+export const userManager = new UserManager(config);
 
-export async function loadUserFromStorage(store) {
+export const storeUser = async () => {
   try {
     let user = await userManager.getUser();
     if (!user) {
-      return store.dispatch(storeUserError());
+      return store.dispatch(userActions.storeUserError());
     }
-    store.dispatch(storeUser(user));
+    store.dispatch(userActions.storeUser(user));
   } catch (e) {
     console.error(`User not found: ${e}`);
-    store.dispatch(storeUserError());
+    store.dispatch(userActions.storeUserError());
   }
-}
+};
 
 export function signinRedirect() {
   return userManager.signinRedirect();

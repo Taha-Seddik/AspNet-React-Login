@@ -1,3 +1,4 @@
 export const GetUserAccessToken = (state) => {
-  return state.userState.user?.token;
+  debugger;
+  return state.userState.user?.access_token;
 };
