@@ -37,21 +37,7 @@ namespace NiceServer
 
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy",
-                        builder => builder
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials()
-                        .SetIsOriginAllowed(origin =>
-                        {
-                            if (string.IsNullOrWhiteSpace(origin)) return false;
-                            // Only add this to allow testing with localhost, remove this line in production!
-                            if (origin.ToLower().StartsWith("http://localhost")) return true;
-                            // Insert your production domain here.
-                            if (origin.ToLower().StartsWith("https://dev.mydomain.com")) return true;
-                            return false;
-                        })
-                    );
+                options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>

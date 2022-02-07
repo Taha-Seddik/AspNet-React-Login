@@ -1,3 +1,4 @@
+import { userActions } from "./user.slice";
 import { userService } from "../api/account.service";
 
 const login = (loginPayload, callback) => {
@@ -5,7 +6,9 @@ const login = (loginPayload, callback) => {
     userService
       .login(loginPayload)
       .then((res) => {
+        const data = res.data;
         callback();
+        dispatch(userActions.login(data));
       })
       .catch((error) => {
         console.log("err", error);

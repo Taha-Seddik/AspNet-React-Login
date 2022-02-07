@@ -1,18 +1,35 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using NiceServer.Models;
+using NiceServer.Services;
 using System;
-using System.Threading.Tasks;
+using System.Text;
 
 namespace NiceServer.Extensions
 {
     public static class StartupExtensions
     {
-        public static void ConfigureAuthentication(this IServiceCollection services,
+        //public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration,
+        //    IWebHostEnvironment currentEnvironment)
+        //{
+        //services.AddAuthentication(options =>
+        //    {
+        //        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    })
+        //    .AddJwtBearer(options =>
+        //    {
+        //        options.Authority = "http://localhost:5000/";
+        //        options.RequireHttpsMetadata = false;
+        //    });
+
+        //}
+
+        public static IServiceCollection ConfigureAuthentication(this IServiceCollection services,
             IConfiguration config)
         {
             services.AddIdentityCore<AppUser>(options =>
@@ -29,36 +46,50 @@ namespace NiceServer.Extensions
             .AddSignInManager<SignInManager<AppUser>>()
             .AddDefaultTokenProviders();
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
+            .AddJwtBearer(opt =>
             {
-                options.Cookie.Name = "UserLoginCookie";
-                options.SlidingExpiration = true;
-                options.ExpireTimeSpan = new TimeSpan(1, 0, 0); // Expires in 1 hour
-                options.Events.OnRedirectToLogin = (context) =>
+                opt.TokenValidationParameters = new TokenValidationParameters
                 {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return Task.CompletedTask;
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
-
-                options.Cookie.HttpOnly = true;
-                // Only use this when the sites are on different domains
-                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+                //opt.Events = new JwtBearerEvents
+                //{
+                //    OnMessageReceived = context =>
+                //    {
+                //        var accessToken = context.Request.Query["access_token"];
+                //        var path = context.HttpContext.Request.Path;
+                //        if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chat")))
+                //        {
+                //            context.Token = accessToken;
+                //        }
+                //        return Task.CompletedTask;
+                //    }
+                //};
             });
 
             services.AddAuthorization(options =>
             {
-                var policy = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
+                var policy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build();
                 options.AddPolicy("RequireAuthenticatedUser", policy);
             });
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<TokenService>();
+
+            return services;
         }
     }
 }

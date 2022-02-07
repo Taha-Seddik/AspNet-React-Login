@@ -1,19 +1,21 @@
-import axiosInstance from "./axiosInstance";
+import axios from "axios";
+
+axios.defaults.baseURL = "http://localhost:5000/api";
 
 const getCurrentUser = () => {
-  return axiosInstance.get("/account");
+  return axios.get("/account");
 };
 
 const login = (userLoginData) => {
-  return axiosInstance.post("/account/login", userLoginData);
+  return axios.post("/account/login", userLoginData);
 };
 
 const register = (userRegisterData) => {
-  return axiosInstance.post("/account/register", userRegisterData);
+  return axios.post("/account/register", userRegisterData);
 };
 
 const refreshToken = () => {
-  return axiosInstance.post("/account/refreshToken");
+  return axios.post("/account/refreshToken");
 };
 
 export const userService = {
