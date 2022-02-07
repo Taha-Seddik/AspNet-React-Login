@@ -68,7 +68,7 @@ namespace NiceServer
                 });
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

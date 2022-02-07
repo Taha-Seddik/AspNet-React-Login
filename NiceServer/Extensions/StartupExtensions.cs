@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NiceServer.Models;
+using System.Net.Http;
 
 namespace NiceServer.Extensions
 {
@@ -46,6 +47,10 @@ namespace NiceServer.Extensions
                 // base-address of your identityserver
                 options.Authority = "https://localhost:5001/";
                 options.RequireHttpsMetadata = false;
+                // allow self-signed SSL certs
+                options.BackchannelHttpHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = delegate { return true; } };
+                // the scope id of this api
+                options.Audience = "Nice_Api";
             });
 
             // Authorization
