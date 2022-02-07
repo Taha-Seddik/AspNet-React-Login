@@ -1,15 +1,29 @@
-import { userActions } from "./user.slice";
 import { userService } from "../api/account.service";
 
-const storeUser = (newUser) => {
+const login = (loginPayload, callback) => {
+  return (dispatch, getState) => {
+    userService
+      .login(loginPayload)
+      .then((res) => {
+        const data = res.data;
+        callback();
+      })
+      .catch((error) => {
+        console.log("err", error);
+      });
+  };
+};
+
+const logout = (logoutPayload) => {
   return (dispatch, getState) => {};
 };
 
-const storeUserError = () => {
+const register = (registerPayload) => {
   return (dispatch, getState) => {};
 };
 
 export const userCustomActions = {
-  storeUser,
-  storeUserError,
+  login,
+  logout,
+  register,
 };

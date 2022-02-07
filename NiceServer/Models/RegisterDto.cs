@@ -16,5 +16,6 @@ namespace NiceServer.Models
 
         [Required]
         public string Username { get; set; }
+
     }
 }
