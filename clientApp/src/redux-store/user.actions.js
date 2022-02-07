@@ -1,7 +1,11 @@
 import { userActions } from "./user.slice";
 import { userService } from "../api/account.service";
 
-const login = (loginPayload, callback) => {
+const storeUser = (logoutPayload) => {
+  return (dispatch, getState) => {};
+};
+
+const storeUserError = (loginPayload, callback) => {
   return (dispatch, getState) => {
     userService
       .login(loginPayload)
@@ -16,16 +20,7 @@ const login = (loginPayload, callback) => {
   };
 };
 
-const logout = (logoutPayload) => {
-  return (dispatch, getState) => {};
-};
-
-const register = (registerPayload) => {
-  return (dispatch, getState) => {};
-};
-
 export const userCustomActions = {
-  login,
-  logout,
-  register,
+  storeUser,
+  storeUserError,
 };
