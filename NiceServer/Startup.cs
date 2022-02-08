@@ -1,3 +1,4 @@
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +49,7 @@ namespace NiceServer
                             // Only add this to allow testing with localhost, remove this line in production!
                             if (origin.ToLower().StartsWith("http://localhost")) return true;
                             // Insert your production domain here.
-                            if (origin.ToLower().StartsWith("https://dev.mydomain.com")) return true;
+                            if (origin.ToLower().StartsWith("https://1576l.csb.app")) return true;
                             return false;
                         })
                     );
@@ -73,6 +74,11 @@ namespace NiceServer
 
             if (env.IsDevelopment())
             {
+                app.Use(async (ctx, next) =>
+                {
+                    ctx.SetIdentityServerOrigin("http://localhost:3000");
+                    await next();
+                });
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
@@ -85,6 +91,8 @@ namespace NiceServer
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCookiePolicy();
 
             app.UseIdentityServer();
 

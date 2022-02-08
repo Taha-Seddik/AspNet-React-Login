@@ -38,14 +38,11 @@ namespace NiceServer.Extensions
             })
            .AddInMemoryIdentityResources(IdentityServerConfig.IdentityResources)
            .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
-           .AddInMemoryClients(IdentityServerConfig.Clients);
+           .AddInMemoryClients(IdentityServerConfig.Clients)
+           .AddDeveloperSigningCredential();
 
             // JWT AUTH
-            services.AddAuthentication(options =>
-            {
-                options.DefaultChallengeScheme = "oidc";
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
             // Authorization
@@ -56,6 +53,8 @@ namespace NiceServer.Extensions
                     .Build();
                 options.AddPolicy("RequireAuthenticatedUser", policy);
             });
+
+            services.AddAntiforgery(o => o.SuppressXFrameOptionsHeader = true);
 
         }
     }

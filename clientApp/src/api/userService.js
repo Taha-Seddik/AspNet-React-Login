@@ -3,9 +3,10 @@ import { userActions } from "../redux-store/user.slice";
 import store from "../redux-store/store";
 
 const config = {
-  authority: "http://localhost:5000",
+  authority: "http://localhost:3000",
   client_id: "coucou_frontend",
-  redirect_uri: "http://localhost:3000/signin-oidc",
+  redirect_uri: "http://localhost:3000/callback",
+  silent_redirect_uri: "http://localhost:3000/silent_renew",
   response_type: "code",
   scope: "openid profile Nice_Api",
   post_logout_redirect_uri: "http://localhost:3000/signout-oidc",
