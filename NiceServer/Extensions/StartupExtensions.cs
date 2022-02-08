@@ -61,6 +61,8 @@ namespace NiceServer.Extensions
 
             services.AddAntiforgery(o => o.SuppressXFrameOptionsHeader = true);
 
+            // see https://www.thinktecture.com/en/identity/samesite/prepare-your-identityserver/
+            services.ConfigureNonBreakingSameSiteCookies();
         }
     }
 }
