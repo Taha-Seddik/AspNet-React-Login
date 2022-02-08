@@ -12,7 +12,7 @@ const config = {
   post_logout_redirect_uri: "http://localhost:3000/signout-oidc",
 };
 
-export const userManager = new UserManager(config);
+const userManager = new UserManager(config);
 
 export const storeUser = async () => {
   try {

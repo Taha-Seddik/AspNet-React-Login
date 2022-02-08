@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
-import { userManager } from "../api/userService";
+import { signinRedirectCallback } from "../api/userService";
 
 export const CallbackComponent = () => {
   useEffect(() => {
-    userManager
-      .signinRedirectCallback()
+    signinRedirectCallback()
       .then((res) => {
         console.log(res);
       })
