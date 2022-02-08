@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { userCustomActions } from "../redux-store/user.actions";
-import { useNavigate } from "react-router-dom";
+import { userManager } from "../config/userManager";
 
 const LoginComponent = () => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("taha.seddik@gmail.com");
   const [password, setPassword] = useState("Tahaseddik1992$");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const submit = (e) => {
     e.preventDefault();
@@ -18,7 +18,8 @@ const LoginComponent = () => {
           Password: password,
         },
         () => {
-          navigate("/home");
+          userManager.signinRedirect();
+          // navigate("/home");
         }
       )
     );

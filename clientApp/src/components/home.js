@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { stuffService } from "../api/stuff.service";
-import userManager from "../api/userService";
+import { userManager } from "../config/userManager";
 
 export const HomeComponent = () => {
   const [infos, setInfos] = useState();
@@ -17,8 +17,8 @@ export const HomeComponent = () => {
 
   const handleClick = () => {
     userManager
-      .signinRedirect()
-      .then(() => {})
+      .signinSilent()
+      .then((re) => {})
       .catch((err) => {
         console.error(err);
       });

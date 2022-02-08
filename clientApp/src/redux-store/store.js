@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { userReducer } from "./user.slice";
+import { reducer as oidcReducer } from "redux-oidc";
 
 export const rootReducer = combineReducers({
-  userState: userReducer,
+  oidc: oidcReducer,
 });
 
 const store = configureStore({
@@ -10,8 +10,11 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types
-        ignoredActions: ["UserSlice/storeUser"],
+        ignoredActions: [
+          "redux-oidc/USER_FOUND",
+          "redux-oidc/SILENT_RENEW_ERROR",
+        ],
+        ignoredPaths: ["oidc.user"],
       },
     }),
   devTools: true,

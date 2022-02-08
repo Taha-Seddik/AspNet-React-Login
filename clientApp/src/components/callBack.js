@@ -1,15 +1,21 @@
-import React, { useEffect } from "react";
-import { signinRedirectCallback } from "../api/userService";
+import React from "react";
+import { userManager } from "../config/userManager";
+import { CallbackComponent } from "redux-oidc";
+import { useNavigate } from "react-router-dom";
 
-export const CallbackComponent = () => {
-  useEffect(() => {
-    signinRedirectCallback()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-  return <div>CallBack zouta</div>;
+export const CallbackZmonkaComponent = () => {
+  const navigate = useNavigate();
+  return (
+    <CallbackComponent
+      userManager={userManager}
+      successCallback={(user) => {
+        navigate("/home");
+      }}
+      errorCallback={(error) => {
+        console.error("Login error", error);
+      }}
+    >
+      <div>Redirecting...</div>
+    </CallbackComponent>
+  );
 };
