@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,28 +34,28 @@ namespace NiceServer.Extensions
                 options.UserInteraction.LoginUrl = "/login";
                 options.UserInteraction.LogoutUrl = "/logout";
                 options.UserInteraction.ErrorUrl = "/error";
+                options.Authentication.CookieSameSiteMode = SameSiteMode.None;
             })
            .AddInMemoryIdentityResources(IdentityServerConfig.IdentityResources)
            .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
            .AddInMemoryClients(IdentityServerConfig.Clients)
            .AddDeveloperSigningCredential();
 
-            // JWT AUTH
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            //{
+            //    options.Cookie.SameSite = SameSiteMode.None;
+            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //});
 
             // Authorization
-            services.AddAuthorization(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-                    .Build();
-                options.AddPolicy("RequireAuthenticatedUser", policy);
-            });
+            //services.AddAuthorization(options =>
+            //{
+            //    var policy = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
+            //        .RequireAuthenticatedUser()
+            //        .Build();
+            //    options.AddPolicy("RequireAuthenticatedUser", policy);
+            //});
 
             services.AddAntiforgery(o => o.SuppressXFrameOptionsHeader = true);
 

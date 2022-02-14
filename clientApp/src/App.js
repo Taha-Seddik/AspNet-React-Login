@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import store from "./redux-store/store";
 import { RoutesWrapper } from "./routes/routes";
 import { OidcProvider } from "redux-oidc";
-import { userManager } from "./config/userManager";
+import { userManager } from "./configs/userManager";
 
 function App() {
   return (

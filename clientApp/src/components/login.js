@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { userCustomActions } from "../redux-store/user.actions";
-import { userManager } from "../config/userManager";
+import { userManager } from "../configs/userManager";
 
 const LoginComponent = () => {
   const dispatch = useDispatch();

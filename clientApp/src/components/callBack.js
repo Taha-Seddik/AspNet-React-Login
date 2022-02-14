@@ -1,5 +1,5 @@
 import React from "react";
-import { userManager } from "../config/userManager";
+import { userManager } from "../configs/userManager";
 import { CallbackComponent } from "redux-oidc";
 import { useNavigate } from "react-router-dom";
 
